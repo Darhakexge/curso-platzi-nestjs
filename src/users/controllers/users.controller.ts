@@ -27,8 +27,8 @@ export class UsersController {
     }
 
     @Get(':id/orders')
-    orders(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.findOne(id);
+    getOrders(@Param('id', ParseIntPipe) id: number) {
+        return this.usersService.getOrderByUser(id);
     }
 
     @Post()
