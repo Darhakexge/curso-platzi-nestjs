@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+*.md diff=markdown
+package-lock.json   -diff -merge
+package-lock.json    linguist-generated=true
