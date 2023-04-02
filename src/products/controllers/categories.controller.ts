@@ -1,15 +1,17 @@
 import {
+    Body,
     Controller,
+    Delete,
     Get,
+    HttpCode,
+    HttpStatus,
     Param,
     Post,
-    Body,
     Put,
-    Delete,
-    ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './../dtos/category.dtos';
 
@@ -19,30 +21,34 @@ export class CategoriesController {
     constructor(private categoriesService: CategoriesService) {}
 
     @Get()
-    findAll() {
-        return this.categoriesService.findAll();
+    @ApiOperation({
+        description: 'Lista todas las categorías',
+    })
+    async getCategories() {
+        return await this.categoriesService.findAll();
     }
 
     @Get(':id')
-    get(@Param('id', ParseIntPipe) id: number) {
-        return this.categoriesService.findOne(id);
+    async getOne(@Param('id', MongoIdPipe) id: string) {
+        return await this.categoriesService.findOne(id);
     }
 
     @Post()
-    create(@Body() payload: CreateCategoryDto) {
-        return this.categoriesService.create(payload);
+    async create(@Body() payload: CreateCategoryDto) {
+        return await this.categoriesService.create(payload);
     }
 
     @Put(':id')
-    update(
-        @Param('id', ParseIntPipe) id: number,
+    async update(
+        @Param('id', MongoIdPipe) id: string,
         @Body() payload: UpdateCategoryDto,
     ) {
-        return this.categoriesService.update(id, payload);
+        return await this.categoriesService.update(id, payload);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
-        return this.categoriesService.remove(+id);
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async delete(@Param('id', MongoIdPipe) id: string) {
+        return await this.categoriesService.remove(id);
     }
 }

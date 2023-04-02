@@ -4,12 +4,12 @@ import {
     Delete,
     Get,
     Param,
-    ParseIntPipe,
     Post,
     Put,
 } from '@nestjs/common';
-
 import { ApiTags } from '@nestjs/swagger';
+
+import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
 import { UsersService } from '../services/users.service';
 
@@ -19,35 +19,35 @@ export class UsersController {
     constructor(private usersService: UsersService) {}
 
     @Get()
-    findAll() {
-        return this.usersService.findAll();
+    async findAll() {
+        return await this.usersService.findAll();
     }
 
     @Get(':id')
-    get(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.findOne(id);
+    async get(@Param('id', MongoIdPipe) id: string) {
+        return await this.usersService.findOne(id);
     }
 
     @Get(':id/orders')
-    getOrders(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.getOrderByUser(id);
+    async getOrders(@Param('id', MongoIdPipe) id: string) {
+        return await this.usersService.getOrderByUser(id);
     }
 
     @Post()
-    create(@Body() payload: CreateUserDto) {
-        return this.usersService.create(payload);
+    async create(@Body() payload: CreateUserDto) {
+        return await this.usersService.create(payload);
     }
 
     @Put(':id')
-    update(
-        @Param('id', ParseIntPipe) id: number,
+    async update(
+        @Param('id', MongoIdPipe) id: string,
         @Body() payload: UpdateUserDto,
     ) {
-        return this.usersService.update(id, payload);
+        return await this.usersService.update(id, payload);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.remove(+id);
+    async remove(@Param('id', MongoIdPipe) id: string) {
+        return await this.usersService.remove(id);
     }
 }

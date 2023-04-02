@@ -12,8 +12,12 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { ParseIntPipe } from '../../common/parse-int.pipe';
-import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
+import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
+import {
+    CreateProductDto,
+    FilterProducDto,
+    UpdateProductDto,
+} from '../dtos/products.dtos';
 
 import { ProductsService } from './../services/products.service';
 
@@ -26,47 +30,31 @@ export class ProductsController {
     @ApiOperation({
         description: 'Lista todos los productos',
     })
-    getProducts(
-        @Query('limit') limit = 100,
-        @Query('offset') offset = 0,
-        @Query('brand') brand: string,
-    ) {
-        // return {
-        //   message: `products limit=> ${limit} offset=> ${offset} brand=> ${brand}`,
-        // };
-        return this.productsService.findAll();
+    async getProducts(@Query() params: FilterProducDto) {
+        return await this.productsService.findAll(params);
     }
 
-    @Get('filter')
-    getProductFilter() {
-        return `yo soy un filter`;
-    }
-
-    @Get(':productId')
-    @HttpCode(HttpStatus.ACCEPTED)
-    getOne(@Param('productId', ParseIntPipe) productId: number) {
-        // response.status(200).send({
-        //   message: `product ${productId}`,
-        // });
-        return this.productsService.findOne(productId);
+    @Get(':id')
+    async getOne(@Param('id', MongoIdPipe) id: string) {
+        return await this.productsService.findOne(id);
     }
 
     @Post()
-    create(@Body() payload: CreateProductDto) {
-        // return {
-        //   message: 'accion de crear',
-        //   payload,
-        // };
-        return this.productsService.create(payload);
+    async create(@Body() payload: CreateProductDto) {
+        return await this.productsService.create(payload);
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() payload: UpdateProductDto) {
-        return this.productsService.update(+id, payload);
+    async update(
+        @Param('id', MongoIdPipe) id: string,
+        @Body() payload: UpdateProductDto,
+    ) {
+        return await this.productsService.update(id, payload);
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
-        return this.productsService.remove(+id);
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async delete(@Param('id', MongoIdPipe) id: string) {
+        return await this.productsService.remove(id);
     }
 }
